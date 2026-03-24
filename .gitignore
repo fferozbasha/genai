@@ -1,0 +1,16 @@
+# Virtual environments
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# Env files
+.env
+
+# VS Code
+*.code-workspace
+
+# Project-specific
+Bedrock/
