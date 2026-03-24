@@ -2,6 +2,7 @@ import boto3
 import json
 from botocore.config import Config
 
+# Option to enable debug logging, if required. 
 DEBUG = False
 
 # Creating the bedrock client instance
@@ -22,6 +23,7 @@ def load_courts():
     with open("data/courts.json") as f:
         return json.load(f)
 
+# Infinite loop until the user exits the chat. 
 while True:
     ai_response = ""
     user_input = input("You: ")
@@ -52,6 +54,7 @@ while True:
         text += "\n. Always return the fields intent, filters (json array), results (array), summary"
 
         courts = load_courts()
+        # adding the fetched court details to the user prompt. 
         text += "\n. {\"courts_list\": " + str(courts) + " }" 
 
         text += user_input
@@ -63,6 +66,7 @@ while True:
 
     messages_list.append({"role": "user", "content": content})
 
+    # using the bedrock's converse_stream api to get the api respone in real-time like a stream
     response = bedrock.converse_stream(
         modelId="us.amazon.nova-2-lite-v1:0",
         messages = messages_list
