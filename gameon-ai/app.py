@@ -62,7 +62,7 @@ while True:
 
         is_first_chat_message = False
     else:
-        content = [{"text": {"User Query": user_input}}]
+        content = [{"text": user_input}]
 
     messages_list.append({"role": "user", "content": content})
 
