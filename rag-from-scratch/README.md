@@ -74,6 +74,8 @@ Then enter your query when prompted.
 
 <img width="1488" height="366" alt="image" src="https://github.com/user-attachments/assets/37c969c2-3258-468f-bdad-aa9c2f2b8eab" />
 
+
+
 Flow when the user input does not seem relevant to the RAG documents
 
 <img width="1345" height="148" alt="image" src="https://github.com/user-attachments/assets/e634db78-7546-438d-a862-800549173b85" />
