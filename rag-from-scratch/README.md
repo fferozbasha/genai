@@ -72,17 +72,7 @@ Then enter your query when prompted.
 
 ## 📌 Example Flow
 
-**User Query:**
-```
-What are NovaTech's future plans?
-```
-
-**Retrieved Context:**
-- IPO planned by 2027  
-- Target revenue of $1B by 2030  
-
-**LLM Output:**
-Short, context-aware answer generated based on retrieved documents.
+<img width="1488" height="366" alt="image" src="https://github.com/user-attachments/assets/37c969c2-3258-468f-bdad-aa9c2f2b8eab" />
 
 ---
 
