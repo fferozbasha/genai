@@ -72,7 +72,7 @@ Each answer is scored from 1--5.
 
 ## 📈 Sample Results
 
-<img width="898" height="240" alt="image" src="https://github.com/user-attachments/assets/173a3a09-2cf3-42f8-8afc-7975ece11445" />
+<img width="904" height="234" alt="image" src="https://github.com/user-attachments/assets/590d2f7a-7f18-472f-bd14-2bca6f194a5a" />
 
 ------------------------------------------------------------------------
 
