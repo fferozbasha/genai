@@ -1,0 +1,100 @@
+RAG Document loaded successfully.
+Bedrock instance initiated successfully.
+Vector DB Client created successfully.
+
+
+User: What happens if a player does not check in on time?
+Expected Response: If the player does not check in within 10 minutes after start time, the booking may be cancelled.
+====================================================================================================
+Starting with User option 100Split with Chunk Size = 100 and Chunk overlap = 10
+
+
+Document split in to 33 chunks.
+Embedding generation for Chunks. Started....
+Embedding generation for Chunks. Completed....
+Vector DB collection created with name = 100Split
+Insert the RAG document chunk embeddings in to the Vector DB collection. Starting...
+Insert the RAG document chunk embeddings in to the Vector DB collection. Completed.
+Querying the collection now with the User query and retrieving top 3 results
+
+LLM Response: If a player does not check in at least 10 minutes before their scheduled time, their booking may be automatically canceled, and the court or service may be released for others.
+====================================================================================================
+Starting with User option 300Split with Chunk Size = 300 and Chunk overlap = 50
+
+
+Document split in to 9 chunks.
+Embedding generation for Chunks. Started....
+Embedding generation for Chunks. Completed....
+Vector DB collection created with name = 300Split
+Insert the RAG document chunk embeddings in to the Vector DB collection. Starting...
+Insert the RAG document chunk embeddings in to the Vector DB collection. Completed.
+Querying the collection now with the User query and retrieving top 3 results
+
+LLM Response: If a player fails to check in 10 minutes before or after their scheduled time, their booking may be automatically cancelled. They should also ensure they follow sportsmanship rules to avoid penalties.
+====================================================================================================
+Starting with User option 600Split with Chunk Size = 600 and Chunk overlap = 100
+
+
+Document split in to 4 chunks.
+Embedding generation for Chunks. Started....
+Embedding generation for Chunks. Completed....
+Vector DB collection created with name = 600Split
+Insert the RAG document chunk embeddings in to the Vector DB collection. Starting...
+Insert the RAG document chunk embeddings in to the Vector DB collection. Completed.
+Querying the collection now with the User query and retrieving top 3 results
+
+LLM Response: If a player fails to check in within 10 minutes after their scheduled time, their booking will be automatically cancelled and no refund will be issued. Repeated no-shows may lead to suspension of booking privileges.
+====================================================================================================
+Starting with User option 1000Split with Chunk Size = 1000 and Chunk overlap = 150
+
+
+Document split in to 2 chunks.
+Embedding generation for Chunks. Started....
+Embedding generation for Chunks. Completed....
+Vector DB collection created with name = 1000Split
+Insert the RAG document chunk embeddings in to the Vector DB collection. Starting...
+Insert the RAG document chunk embeddings in to the Vector DB collection. Completed.
+Querying the collection now with the User query and retrieving top 3 results
+
+LLM Response: If a player does not check in at least 10 minutes before their scheduled time, their booking may be automatically cancelled. They will lose their reserved court and any payment made may not be refunded, depending on the policy.
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+Option        = 100Split, Chunk Size=100, Overlap=10
+Correctness   = 3
+Completeness  = 3
+Relevance     = 4
+Groundedness  = 3
+Clarity       = 4
+Overall_score = 3
+Reason.       = The generated answer contains a factual inaccuracy: it states that the player must check in 'at least 10 minutes before their scheduled time', whereas the expected answer specifies 'within 10 minutes after start time'. This discrepancy affects correctness and groundedness. However, the answer is relevant to the question and is relatively clear in its phrasing. Completeness is moderate because while it mentions cancellation, it adds extra information about the court or service being released for others, which may or may not be part of the original context.
+
+
+Option        = 300Split, Chunk Size=300, Overlap=50
+Correctness   = 4
+Completeness  = 4
+Relevance     = 5
+Groundedness  = 4
+Clarity       = 5
+Overall_score = 4
+Reason.       = The generated answer correctly states that a booking may be cancelled if the player does not check in on time, though it slightly misrepresents the timeframe by mentioning '10 minutes before or after' instead of 'after start time' as in the expected answer. It includes additional context about sportsmanship rules which, while not directly relevant to the question, does not detract from the correctness of the main point. The structure is clear and easy to understand.
+
+
+Option        = 600Split, Chunk Size=600, Overlap=100
+Correctness   = 4
+Completeness  = 5
+Relevance     = 5
+Groundedness  = 5
+Clarity       = 5
+Overall_score = 5
+Reason.       = The generated answer correctly states that a booking may be cancelled if the player does not check in within 10 minutes after the start time. It adds additional relevant information about no refunds and potential suspension of booking privileges for repeated no-shows, which enhances completeness without deviating from the core question. The answer is clear, relevant to the question, and fully grounded in the provided context.
+
+
+Option        = 1000Split, Chunk Size=1000, Overlap=150
+Correctness   = 4
+Completeness  = 4
+Relevance     = 5
+Groundedness  = 4
+Clarity       = 5
+Overall_score = 4
+Reason.       = The generated answer is mostly correct and relevant to the question, stating that a booking may be cancelled if the player does not check in on time. However, it inaccurately states '10 minutes before their scheduled time' instead of '10 minutes after start time' as indicated in the expected answer. It also adds extra details about losing the reserved court and potential lack of refund, which, while plausible, are not mentioned in the expected answer and thus reduce completeness and groundedness. The answer is clear and well-structured.
