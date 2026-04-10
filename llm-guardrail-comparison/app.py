@@ -143,14 +143,12 @@ def extract_guardrail_summary(llm_response, assessmentLevel='inputAssessment'):
 def extract_bedrock_llm_response_output(rawLLMResponse):
     return rawLLMResponse["output"]["message"]["content"][0]["text"]
 
-# Gets the User input promp
+# Gets the User input prompt
+print("\n")
 user_input = input("You: ")
-
-print("\n")
-print("Starting with LLM Invocations")
-print("=============================")
 print("\n")
 
+print("----------------------------------------------------------------------------------")
 print("Invoking Bedrock LLM without Guardrail")
 bedrock_llm_response_without_guardrail = get_llm_response_bedrock_without_guardrail(user_input)
 print(f"Response Time      = {bedrock_llm_response_without_guardrail["metrics"]["latencyMs"]} ms")
@@ -201,3 +199,6 @@ else:
         print("\n".join(llm_response_moderation_results))
     else:
         print("LLM response found harmless as per OpenAI moderation API")
+
+
+print("----------------------------------------------------------------------------------")
