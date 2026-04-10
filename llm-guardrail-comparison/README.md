@@ -55,18 +55,7 @@ User Input → Moderation → LLM → Moderation → Response
 
 ## Sample Output
 
-### Bedrock
-```
-LLM Response: guardrail_intervened
-User Prompt blocked by Policy: Topic
-LLM Response blocked by Policy: Content
-```
-
-### OpenAI Moderation
-```
-User Input has blocked content:
-ILLICIT → 68.5% confidence
-```
+<img width="764" height="314" alt="image" src="https://github.com/user-attachments/assets/61faba7c-cc18-4aa2-b8ba-aa046a995cc2" />
 
 ---
 
