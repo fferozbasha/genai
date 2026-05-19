@@ -1,0 +1,252 @@
+{
+  "Comment": "A description of my state machine",
+  "StartAt": "Delete Existing Chunks if same document uploaded again",
+  "States": {
+    "Delete Existing Chunks if same document uploaded again": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Output": "{% $states.input %}",
+      "Arguments": {
+        "FunctionName": "arn:aws:lambda:ap-southeast-2:414079114528:function:lambda-s3-document-check-is-existing:$LATEST",
+        "Payload": "{% $states.input %}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Next": "Detect PII Entities and Redact the docuemnt",
+      "Assign": {
+        "file_name": "{% $states.result.Payload.filename %}",
+        "is_existing_vectors_deleted": "{% $states.result.Payload.is_existing_vectors_deleted %}"
+      }
+    },
+    "Detect PII Entities and Redact the docuemnt": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Output": "{% $states.result.Payload %}",
+      "Arguments": {
+        "FunctionName": "arn:aws:lambda:ap-southeast-2:414079114528:function:lambda-s3-document-remove-pii-entities:$LATEST",
+        "Payload": "{% $states.input %}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Next": "Chunk the Documents",
+      "Assign": {
+        "pii_summary": "{% $states.result.Payload.pii_summary %}"
+      }
+    },
+    "Chunk the Documents": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Output": "{% $states.result.Payload %}",
+      "Arguments": {
+        "FunctionName": "arn:aws:lambda:ap-southeast-2:414079114528:function:lambda-s3-document-split-chunks:$LATEST",
+        "Payload": "{% $states.input %}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Next": "Map"
+    },
+    "Map": {
+      "Type": "Map",
+      "ItemProcessor": {
+        "ProcessorConfig": {
+          "Mode": "INLINE"
+        },
+        "StartAt": "Parallel",
+        "States": {
+          "Parallel": {
+            "Type": "Parallel",
+            "End": true,
+            "Branches": [
+              {
+                "StartAt": "Get Chunk Metadata",
+                "States": {
+                  "Get Chunk Metadata": {
+                    "Type": "Task",
+                    "Resource": "arn:aws:states:::lambda:invoke",
+                    "Output": "{% $states.result.Payload %}",
+                    "Arguments": {
+                      "FunctionName": "arn:aws:lambda:ap-southeast-2:414079114528:function:lambda-s3-document-get-chunk-metadata:$LATEST",
+                      "Payload": "{% $states.input %}"
+                    },
+                    "Retry": [
+                      {
+                        "ErrorEquals": [
+                          "Lambda.ServiceException",
+                          "Lambda.AWSLambdaException",
+                          "Lambda.SdkClientException",
+                          "Lambda.TooManyRequestsException"
+                        ],
+                        "IntervalSeconds": 1,
+                        "MaxAttempts": 3,
+                        "BackoffRate": 2,
+                        "JitterStrategy": "FULL"
+                      }
+                    ],
+                    "End": true
+                  }
+                }
+              },
+              {
+                "StartAt": "Generate Chunk Embeddings",
+                "States": {
+                  "Generate Chunk Embeddings": {
+                    "Type": "Task",
+                    "Resource": "arn:aws:states:::lambda:invoke",
+                    "Output": "{% $states.result.Payload %}",
+                    "Arguments": {
+                      "FunctionName": "arn:aws:lambda:ap-southeast-2:414079114528:function:lambda-s3-document-generate-embeddings:$LATEST",
+                      "Payload": "{% $states.input %}"
+                    },
+                    "Retry": [
+                      {
+                        "ErrorEquals": [
+                          "Lambda.ServiceException",
+                          "Lambda.AWSLambdaException",
+                          "Lambda.SdkClientException",
+                          "Lambda.TooManyRequestsException"
+                        ],
+                        "IntervalSeconds": 1,
+                        "MaxAttempts": 3,
+                        "BackoffRate": 2,
+                        "JitterStrategy": "FULL"
+                      }
+                    ],
+                    "End": true
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "Items": "{% $states.input.chunks %}",
+      "ItemSelector": {
+        "chunk": "{% $states.context.Map.Item.Value %}",
+        "index": "{% $states.context.Map.Item.Index %}"
+      },
+      "Next": "Merge Metadata and Embeddings for Chunk"
+    },
+    "Merge Metadata and Embeddings for Chunk": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Output": "{% $states.result.Payload %}",
+      "Arguments": {
+        "FunctionName": "arn:aws:lambda:ap-southeast-2:414079114528:function:lambda-s3-document-merge-metadata-embeddings:$LATEST",
+        "Payload": "{% $states.input %}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Next": "Insert in to S3 Vectors",
+      "Assign": {
+        "all_chunk_ids": "{% $states.result.Payload.all_chunk_ids %}"
+      }
+    },
+    "Insert in to S3 Vectors": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Output": "{% $states.result.Payload %}",
+      "Arguments": {
+        "FunctionName": "arn:aws:lambda:ap-southeast-2:414079114528:function:lambda-s3-document-insert-s3-vectors:$LATEST",
+        "Payload": "{% $states.input %}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Assign": {
+        "total_vectors_inserted": "{% $states.result.Payload.total_vectors_inserted %}"
+      },
+      "Next": "Updaet RAG Pipeline Audit Summary"
+    },
+    "Updaet RAG Pipeline Audit Summary": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Output": "{% $states.result.Payload %}",
+      "Arguments": {
+        "FunctionName": "arn:aws:lambda:ap-southeast-2:414079114528:function:lambda-s3-document-update-audit-to-dynamodb:$LATEST",
+        "Payload": {
+          "file_name": "{% $file_name %}",
+          "pii_summary": "{% $pii_summary %}",
+          "total_vectors_inserted": "{% $total_vectors_inserted %}",
+          "execution_arn": "{% $states.context.Execution.Id %}",
+          "is_existing_vectors_deleted": "{% $is_existing_vectors_deleted %}",
+          "all_chunk_ids": "{% $all_chunk_ids %}"
+        }
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "End": true
+    }
+  },
+  "QueryLanguage": "JSONata"
+}
