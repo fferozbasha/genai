@@ -1,6 +1,7 @@
 import streamlit as st
 import boto3
 import time
+import pandas as pd
 
 st.title("Upload Document")
 
@@ -11,7 +12,9 @@ STEP_FUNC_TASK_NAME_DETECT_PII_ENTITIES = "Detect PII Entities and Redact the do
 STEP_FUNC_TASK_NAME_INSERT_S3_VECTORS   = "Insert in to S3 Vectors"
 
 s3 = boto3.client("s3")
+dynamodb = boto3.resource('dynamodb')
 stepfunctions = boto3.client("stepfunctions")
+audit_table = dynamodb.Table('s3-vector-chunks-entry')
 step_funtion_running_execution = None
 
 # File uploader to allow the user to upload the file.
@@ -80,7 +83,31 @@ if uploaded_file:
             time.sleep(3)
 
     if step_funtion_running_execution_status == "SUCCEEDED":
-        st.success("✅ Document Ready to Query")
+        st.success("Document Ready to Query")
+        audit_table_results = audit_table.get_item(Key={'s3_object_name': uploaded_file.name})
+        item = audit_table_results["Item"]
+
+        st.write("## Upload Summary")
+        col1, col2, col3 = st.columns(3)
+
+        col1.metric(
+            "Total Vectors Inserted",
+            item["total_vectors_inserted"]
+        )
+
+        col2.metric(
+            "Replaced Vectors ?",
+            str(item["is_existing_vectors_deleted"])
+        )
+
+        col3.metric(
+            "Total PII Found",
+            sum(item["pii_summary"].values())
+        )
+
+        st.write("### PII Summary")
+        for pii_type, count in item["pii_summary"].items():
+            st.write(f"- {pii_type}: {int(count)}")
 
     else:
         st.error(f"Pipeline ended with status: {step_funtion_running_execution_status}")
