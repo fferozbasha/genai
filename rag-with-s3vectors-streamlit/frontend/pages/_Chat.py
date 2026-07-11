@@ -7,6 +7,7 @@ st.title("Chat")
 s3vectors = boto3.client("s3vectors")
 
 bedrock_instance = None
+bedrock_agent_runtime_instance = boto3.client('bedrock-agent-runtime', region_name='us-east-1')
 BEDROCK_EMBEDDING_MODEL_ID = "amazon.titan-embed-text-v2:0"
 BEDROCK_LLM_MODEL_ID = "us.amazon.nova-2-lite-v1:0"
 
@@ -50,6 +51,37 @@ def query_vector_db(prompt, topK=5):
 
     return response
 
+def get_reranked_scores(prompt, rag_results):
+    if not rag_results:
+        return None
+    
+    queries = [{'type': 'TEXT', 'textQuery': {"text": prompt}}]
+    
+    sources = []
+
+    for rag_result in rag_results:
+        source = {}
+        source['type'] = 'INLINE'
+        source['inlineDocumentSource'] = {"type": "TEXT", "textDocument": {"text": rag_result}}
+        sources.append(source)
+
+    reranked_response = bedrock_agent_runtime_instance.rerank(queries=queries, sources=sources, rerankingConfiguration={
+        'type': 'BEDROCK_RERANKING_MODEL',
+        'bedrockRerankingConfiguration': {
+            'modelConfiguration': {
+                'modelArn': 'arn:aws:bedrock:us-east-1::foundation-model/cohere.rerank-v3-5:0'
+            },
+            'numberOfResults': 3
+        }
+    })
+
+    reranked_rag_results = []
+    for response in reranked_response['results']:
+        print(f"Reranked response = {response}")
+        reranked_rag_results.append(rag_results[response['index']])
+
+    return reranked_rag_results
+
 def get_relevant_texts_from_vector_db(prompt):
 
     relevant_texts = []
@@ -64,7 +96,9 @@ def get_relevant_texts_from_vector_db(prompt):
         print(f"Key = {vector["key"]} with distance={vector["distance"]}")   
         relevant_texts.append(vector["metadata"]["text"])
 
-    return "\n".join(relevant_texts)
+    reranked_rag_results = get_reranked_scores(prompt=prompt, rag_results=relevant_texts)
+
+    return "\n".join(reranked_rag_results)
 
 def get_prompt_with_rag_results_for_user_query(prompt):
 
