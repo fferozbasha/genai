@@ -1,27 +1,120 @@
-# Adaptive AI Maths Tutor
+# 🤖 Adaptive AI Maths Tutor
 
-## Overview
+## 📌 Overview
 
-An AI-powered adaptive maths tutor built using OpenAI Agents SDK.\
-This system generates questions, validates them, evaluates user answers,
-and provides feedback.
+An AI-powered adaptive maths tutor built using **OpenAI Agents SDK**.
 
-------------------------------------------------------------------------
-
-## Features
-
--   Multi-agent architecture (Intent, Generator, Validator, Feedback,
-    Summary)
--   Structured outputs using Pydantic
--   Deterministic answer validation (no LLM hallucination)
--   Retry mechanism for invalid questions
--   Per-question feedback
--   Final performance summary
--   Gradio UI with MCQs
+This system simulates a real tutor by: - Generating questions -
+Validating quality - Evaluating answers - Providing feedback -
+Summarising performance
 
 ------------------------------------------------------------------------
 
-## Tech Stack
+## 🔄 How It Works (Flow)
+
+    User Input
+       ↓
+    Intent Agent
+       ↓
+    Question Generator Agent
+       ↓
+    Validator Agent
+       ↓
+    User Answer
+       ↓
+    Answer Validation (Function)
+       ↓
+    Feedback Agent
+       ↓
+    Session Tracking
+       ↓
+    Summary Agent
+
+------------------------------------------------------------------------
+
+## ⚙️ Step-by-Step Flow
+
+### 1. User Input
+
+User provides: - Topic - Grade level - Exam type (ICAS / NAPLAN) -
+Number of questions
+
+------------------------------------------------------------------------
+
+### 2. Intent Agent
+
+Parses user input into structured format: - Topic - Difficulty - Number
+of questions
+
+------------------------------------------------------------------------
+
+### 3. Question Generator Agent
+
+-   Generates **one MCQ question at a time**
+-   Uses **Pydantic structured output**
+-   Includes:
+    -   Question
+    -   4 choices
+    -   Correct answer
+    -   Concept
+
+------------------------------------------------------------------------
+
+### 4. Validator Agent
+
+-   Ensures question quality
+-   Checks:
+    -   Logical correctness
+    -   Answer exists in choices
+-   Retries if invalid (max 3 times)
+
+------------------------------------------------------------------------
+
+### 5. User Interaction
+
+-   User answers MCQ
+-   Time taken is captured
+
+------------------------------------------------------------------------
+
+### 6. Answer Validation (Deterministic)
+
+-   No LLM used
+-   Simple function compares answers
+-   Ensures **100% correctness validation**
+
+------------------------------------------------------------------------
+
+### 7. Feedback Agent
+
+Provides: - Explanation - Mistake insights - Reinforcement
+
+------------------------------------------------------------------------
+
+### 8. Session Tracking
+
+Stores: - Question - User answer - Correct answer - Feedback - Time
+taken - Concept
+
+------------------------------------------------------------------------
+
+### 9. Summary Agent
+
+Generates: - Strengths - Weak areas - Behaviour insights
+
+------------------------------------------------------------------------
+
+## 🧠 Key Learnings
+
+-   Structured outputs using **Pydantic**
+-   Multi-agent orchestration
+-   LLM validation patterns
+-   Reliable AI system design
+-   Tracing and observability
+
+------------------------------------------------------------------------
+
+## 🛠 Tech Stack
 
 -   Python
 -   OpenAI Agents SDK
@@ -30,14 +123,12 @@ and provides feedback.
 
 ------------------------------------------------------------------------
 
-## Project Structure
+## 📁 Project Structure
 
     AIMathsTutor/
-    │
     ├── tutoragents/
     ├── schemas/
     ├── prompts/
-    ├── tools/
     ├── utils/
     ├── app.py
     ├── tutor.py
@@ -46,22 +137,22 @@ and provides feedback.
 
 ------------------------------------------------------------------------
 
-## How to Run
+## 🚀 How to Run
 
-### 1. Setup environment
+### 1. Setup
 
     python -m venv .venv
     source .venv/bin/activate
     pip install -r requirements.txt
 
-### 2. Add API Key
+### 2. Configure
 
-Create `.env`:
+Create `.env` file:
 
-    OPENAI_API_KEY=your_key_here
+    OPENAI_API_KEY=your_key
     MODEL_NAME=gpt-4.1-mini
 
-### 3. Run app
+### 3. Run
 
     python app.py
 
@@ -71,10 +162,3 @@ Create `.env`:
 
 <img width="1103" height="656" alt="image" src="https://github.com/user-attachments/assets/97b00dba-8970-4b4c-b104-0963156a846d" />
 
-
-------------------------------------------------------------------------
-
-
-## Author
-
-Feroz
