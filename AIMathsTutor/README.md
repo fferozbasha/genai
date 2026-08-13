@@ -69,7 +69,8 @@ Create `.env`:
 
 ## Demo
 
-(Add screenshot or video here)
+<img width="1103" height="656" alt="image" src="https://github.com/user-attachments/assets/97b00dba-8970-4b4c-b104-0963156a846d" />
+
 
 ------------------------------------------------------------------------
 
